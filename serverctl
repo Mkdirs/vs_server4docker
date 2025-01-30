@@ -1,0 +1,142 @@
+#!/bin/bash
+
+INSTALL_DIR='./server'
+DATA_DIR='./data'
+
+usage(){
+  echo "./serverctl help"
+  echo -e "\tShow this"
+  echo
+
+  echo "./serverctl setup <version>"
+  echo -e "\tInstall the given server version"
+  echo
+
+  echo "./serverctl run"
+  echo -e "\tRun the container"
+  echo
+
+  echo "./serverctl boot"
+  echo -e "\tRun the container and start the server"
+  echo
+
+  echo "./serverctl go"
+  echo -e "\tOpen a bash in the container"
+  echo
+
+  echo "./serverctl start"
+  echo -e "\tStart the server, the container must be running"
+  echo
+
+  echo "./serverctl restart"
+  echo -e "\tRestart the server, the container must be running"
+  echo
+
+  echo "./serverctl stop"
+  echo -e "\tStop the server and container"
+  echo
+
+  echo "./serverctl shutdown"
+  echo -e "\tStop the container without stopping the server first"
+  echo
+
+  echo "./serverctl update <version>"
+  echo -e "\tUpdate the server to the given version"
+}
+
+# serverctl update <version>
+update(){
+  VERSION=$1
+
+  docker exec -it vsserver ./updater "$VERSION"
+}
+
+# serverctl stop
+shutdown(){
+  docker stop vsserver
+  docker rm vsserver
+}
+
+# serverctl stop
+stop(){
+  docker exec -it vsserver server/server.sh stop
+  shutdown
+}
+
+# serverctl run
+run(){
+  docker run -p 42420:42420/tcp -p 42420:42420/udp -v "$DATA_DIR":/vintagestory/data -v "$INSTALL_DIR":/vintagestory/server -dt --name vsserver vsserver
+}
+
+# serverctl start
+start(){
+  docker exec -it vsserver server/server.sh start
+}
+
+# serverctl boot
+boot(){
+  docker run -p 42420:42420/tcp -p 42420:42420/udp -v "$DATA_DIR":/vintagestory/data -v "$INSTALL_DIR":/vintagestory/server -dt --name vsserver vsserver
+  start
+}
+
+# serverctl restart
+restart(){
+  docker exec -it vsserver server/server.sh restart
+}
+
+# serverctl go
+go(){
+  docker exec -it vsserver bash
+}
+
+# script setup <version>
+setup(){
+  VERSION=$1
+
+  if [ -e "${INSTALL_DIR}/server.sh" ]; then
+          echo "There is already a version installed"
+          echo "Use ./serverctl update <version> instead"
+          exit 1
+  fi
+
+  shutdown
+  docker build -t vsserver . && \
+  run && \
+  update "$VERSION"
+}
+
+if [ $# -eq 0 ]; then
+  echo "Error! syntax:"
+  usage
+  exit 1
+elif [ $# -eq 1 ] && [ "$1" == 'help' ]; then
+  usage
+
+elif [ $# -eq 2 ] && [ "$1" == 'setup' ]; then
+  setup "$2"
+
+elif [ $# -eq 1 ] && [ "$1" == 'run' ]; then
+  run
+
+elif [ $# -eq 1 ] && [ "$1" == 'boot' ]; then
+  boot
+
+elif [ $# -eq 1 ] && [ "$1" == 'go' ]; then
+  go
+
+elif [ $# -eq 1 ] && [ "$1" == 'start' ]; then
+  start
+
+elif [ $# -eq 1 ] && [ "$1" == 'restart' ]; then
+  restart
+
+elif [ $# -eq 1 ] && [ "$1" == 'stop' ]; then
+  stop
+elif [ $# -eq 1 ] && [ "$1" == 'shutdown' ]; then
+  shutdown
+
+elif [ $# -eq 2 ] && [ "$1" == 'update' ]; then
+  update "$2"
+else
+  usage
+fi

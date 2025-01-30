@@ -1,12 +1,23 @@
 # VintageStory Server Docker
 
-# How To Start
-
-Build the image
-``$ docker build -t vsserver [--build-arg VS_VERSION='<version>'] .``
-
-Starting the container
-``$ docker run -v /path/to/data:/vintagestory/data -v /path/to/server:/vintagestory/server -dt --name vsserver vsserver``
+## Setup
+This will build the docker image and run it
+```shell
+serverctl <version> <install_dir> <data_dir>
+```
 
 Accessing the container:
-``$docker exec -it vsserver bash``
+```shell
+docker exec -it vsserver bash
+```
+## Updating the server:
+In the container run
+```shell
+./updater <version>
+```
+
+In the server.sh set the variables:
+``VSPATH=/vintagestory/server``
+``VSDATA=/vintagestory/data``
+
+> Note: in the serverconfig.json set Ip to 0.0.0.0

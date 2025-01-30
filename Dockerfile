@@ -13,16 +13,14 @@ apt-get install -y dotnet7
 
 
 # Setup environment for vintagestory
-ARG VS_VERSION='1.20.3'
 WORKDIR /vintagestory
 
-COPY ./updater.sh ./
+COPY updater ./
 
 RUN apt-get install -y screen && \
 apt-get install -y procps && \
-chmod +x ./updater.sh && \
-useradd vintagestory -s /sbin/nologin && \
-./updater.sh ${VS_VERSION} ./server
+chmod +x ./updater && \
+useradd vintagestory -s /sbin/nologin
 
 VOLUME [ "/vintagestory/server", "/vintagestory/data" ]
 

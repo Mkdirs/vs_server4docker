@@ -1,25 +1,18 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
-        echo "Erreur! syntaxe: updater <version> <install_dir>"
+if [ $# -ne 1 ]; then
+        echo "Erreur! syntaxe: updater <version>"
         exit 1
 fi
 
 VERSION=$1
-INSTALL_DIR=$2
+INSTALL_DIR="./server"
 FILE="vs_server_linux-x64_${VERSION}.tar.gz"
 DOWNLOAD_URL="https://cdn.vintagestory.at/gamefiles/stable/${FILE}"
-
-SAVED_SERVER_SH=false
 
 stop_server() {
         echo "Stopping server..."
         $INSTALL_DIR/server.sh stop
-}
-
-start_server() {
-        echo "Starting server..."
-        $INSTALL_DIR/server.sh start
 }
 
 download() {
@@ -35,8 +28,7 @@ unzip(){
 
 clean(){
         echo "Cleaning installation directory..."
-        cp $INSTALL_DIR/server.sh ./server.sh
-        SAVED_SERVER_SH=true
+        #cp $INSTALL_DIR/server.sh ./server.sh
         rm -rf $INSTALL_DIR/*
 }
 
@@ -55,9 +47,3 @@ else
 fi
 
 unzip
-
-#if [ $SAVED_SERVER_SH = true ]; then
-#       cp ./server.sh $INSTALL_DIR/server.sh
-#fi
-
-#start_server
