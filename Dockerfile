@@ -27,4 +27,4 @@ VOLUME [ "/vintagestory/server", "/vintagestory/data" ]
 EXPOSE 42420/tcp
 EXPOSE 42420/udp
 
-CMD ["/bin/bash"]
+CMD sleep infinity

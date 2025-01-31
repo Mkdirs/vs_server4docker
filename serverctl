@@ -48,7 +48,7 @@ usage(){
 update(){
   VERSION=$1
 
-  docker exec -it vsserver ./updater "$VERSION"
+  docker exec -i vsserver ./updater "$VERSION"
 }
 
 # serverctl stop
@@ -59,29 +59,29 @@ shutdown(){
 
 # serverctl stop
 stop(){
-  docker exec -it vsserver server/server.sh stop
+  docker exec -i vsserver server/server.sh stop
   shutdown
 }
 
 # serverctl run
 run(){
-  docker run -p 42420:42420/tcp -p 42420:42420/udp -v "$DATA_DIR":/vintagestory/data -v "$INSTALL_DIR":/vintagestory/server -dt --name vsserver vsserver
+  docker run -p 42420:42420/tcp -p 42420:42420/udp -v "$DATA_DIR":/vintagestory/data -v "$INSTALL_DIR":/vintagestory/server -d --name vsserver vsserver
 }
 
 # serverctl start
 start(){
-  docker exec -it vsserver server/server.sh start
+  docker exec -i vsserver server/server.sh start
 }
 
 # serverctl boot
 boot(){
-  docker run -p 42420:42420/tcp -p 42420:42420/udp -v "$DATA_DIR":/vintagestory/data -v "$INSTALL_DIR":/vintagestory/server -dt --name vsserver vsserver
+  run
   start
 }
 
 # serverctl restart
 restart(){
-  docker exec -it vsserver server/server.sh restart
+  docker exec -i vsserver server/server.sh restart
 }
 
 # serverctl go
